@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createDecartClient, models } from "@decartai/sdk";
 
 export default function Home() {
-  const hiddenVideoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [apiKey, setApiKey] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -27,9 +26,24 @@ export default function Home() {
   }, []);
 
   // ---------------------------
-  // FACE TRACKING LOOP (NO CAMERA CLASS)
+  // PROMPT ENGINE
   // ---------------------------
-  async function startFaceTracking(video: HTMLVideoElement) {
+  const getPrompt = (emotion: string) => {
+    if (emotion === "talk") {
+      return "ultra realistic human speaking, natural lip movement, cinematic lighting";
+    }
+    if (emotion === "blink") {
+      return "realistic human blinking, subtle motion, natural face";
+    }
+    return "ultra realistic neutral human face, sharp detail, no duplicates";
+  };
+
+  // ---------------------------
+  // FACE TRACKING ONLY (NO AUDIO)
+  // ---------------------------
+  async function initTracking(video: HTMLVideoElement) {
+    if (typeof window === "undefined") return;
+
     const vision = await import("@mediapipe/face_mesh");
 
     faceMesh = new vision.FaceMesh({
@@ -48,24 +62,25 @@ export default function Home() {
       const lm = results.multiFaceLandmarks?.[0];
       if (!lm) return;
 
-      const mouthOpen = Math.abs(lm[13].y - lm[14].y);
+      const mouth = Math.abs(lm[13].y - lm[14].y);
+      const blink = Math.abs(lm[159].y - lm[145].y);
 
-      if (mouthOpen > 0.05) setEmotion("talk");
-      else if (mouthOpen > 0.03) setEmotion("smile");
+      if (mouth > 0.05) setEmotion("talk");
+      else if (blink > 0.02) setEmotion("blink");
       else setEmotion("neutral");
     });
 
-    const sendFrame = async () => {
+    const loop = async () => {
       if (!running) return;
 
       if (video.readyState >= 2) {
         await faceMesh.send({ image: video });
       }
 
-      requestAnimationFrame(sendFrame);
+      requestAnimationFrame(loop);
     };
 
-    sendFrame();
+    loop();
   }
 
   // ---------------------------
@@ -76,26 +91,23 @@ export default function Home() {
       setStatus("Starting...");
 
       if (!apiKey) return setStatus("❌ Missing API key");
-      if (!image) return setStatus("❌ Upload image first");
+      if (!image) return setStatus("❌ Upload image");
 
       running = true;
 
-      // CAMERA
       const camStream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: false,
+        audio: false, // 🔥 AUDIO REMOVED
       });
 
       setStream(camStream);
 
-      const video = hiddenVideoRef.current!;
+      const video = videoRef.current!;
       video.srcObject = camStream;
       await video.play();
 
-      // FACE TRACKING
-      await startFaceTracking(video);
+      await initTracking(video);
 
-      // DECART
       setStatus("Connecting AI...");
 
       const decart = createDecartClient({ apiKey });
@@ -108,20 +120,12 @@ export default function Home() {
 
         onRemoteStream: (remoteStream) => {
           output.srcObject = remoteStream;
-          setStatus("🟢 LIVE GOD MODE");
+          setStatus("🟢 LIVE (NO AUDIO MODE)");
         },
-
-        onError: () => setStatus("❌ Decart error"),
-        onDisconnect: () => setStatus("⚠️ Disconnected"),
 
         initialState: {
           prompt: {
-            text:
-              emotion === "talk"
-                ? "single human speaking, perfect lip sync, cinematic lighting"
-                : emotion === "smile"
-                ? "single smiling realistic human face"
-                : "single neutral human face, ultra realistic, no duplicates",
+            text: getPrompt(emotion),
             enhance: true,
           },
           image,
@@ -149,30 +153,12 @@ export default function Home() {
     setStatus("🔴 STOPPED");
   }
 
-  // ---------------------------
-  // PiP
-  // ---------------------------
-  async function pip() {
-    const video = document.getElementById("out") as HTMLVideoElement;
-
-    if (!video) return;
-
-    try {
-      if (document.pictureInPictureElement) {
-        await document.exitPictureInPicture();
-      } else {
-        await video.requestPictureInPicture();
-      }
-    } catch {}
-  }
-
   return (
     <div className="wrap">
-      {/* hidden camera */}
-      <video ref={hiddenVideoRef} style={{ display: "none" }} />
+      <video ref={videoRef} style={{ display: "none" }} />
 
       <div className="panel">
-        <h2>🔥 GOD MODE FIXED</h2>
+        <h2>🔥 VTUBER CLEAN MODE</h2>
 
         <input
           placeholder="API Key"
@@ -183,11 +169,13 @@ export default function Home() {
           }}
         />
 
-        <input type="file" onChange={(e) => setImage(e.target.files?.[0] || null)} />
+        <input
+          type="file"
+          onChange={(e) => setImage(e.target.files?.[0] || null)}
+        />
 
         <button onClick={start}>START</button>
         <button onClick={stop}>STOP</button>
-        <button onClick={pip}>PiP</button>
 
         <p>Status: {status}</p>
         <p>Emotion: {emotion}</p>
@@ -219,8 +207,8 @@ export default function Home() {
 
         button {
           background: #6366f1;
-          color: white;
           border: none;
+          color: white;
         }
 
         .view {
