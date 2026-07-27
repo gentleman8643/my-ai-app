@@ -1,12 +1,10 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Sparkles } from "lucide-react";
-import { MODEL_OPTIONS, type ModelOption } from "../lib/models";
+import { useEffect, useRef, useState } from 'react';
+import { Check, ChevronDown, Sparkles } from 'lucide-react';
+import { MODEL_OPTIONS, type ModelOption } from '@/lib/models';
 
 type ModelDropdownProps = {
-  value: ModelOption["id"];
-  onChange: (id: ModelOption["id"]) => void;
+  value: ModelOption['id'];
+  onChange: (id: ModelOption['id']) => void;
   disabled?: boolean;
 };
 
@@ -23,13 +21,13 @@ export function ModelDropdown({ value, onChange, disabled }: ModelDropdownProps)
       }
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === 'Escape') setOpen(false);
     }
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
     return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
     };
   }, [open]);
 
@@ -49,9 +47,7 @@ export function ModelDropdown({ value, onChange, disabled }: ModelDropdownProps)
           </span>
           <span className="flex min-w-0 flex-col">
             <span className="flex items-center gap-2">
-              <span className="truncate text-sm font-semibold text-text-0">
-                {selected.label}
-              </span>
+              <span className="truncate text-sm font-semibold text-text-0">{selected.label}</span>
               <span className="flex-none rounded-md bg-primary-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-300">
                 v{selected.version}
               </span>
@@ -65,14 +61,14 @@ export function ModelDropdown({ value, onChange, disabled }: ModelDropdownProps)
           </span>
         </span>
         <ChevronDown
-          className={`h-4 w-4 flex-none text-text-2 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 flex-none text-text-2 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute z-50 mt-2 max-h-[320px] w-full overflow-auto rounded-xl border border-border bg-bg-1 p-1.5 shadow-lg animate-fade-in-up"
+          className="absolute z-50 mt-2 max-h-[320px] w-full overflow-auto rounded-xl border border-border bg-bg-1 p-1.5 shadow-gl-lg animate-fade-in-up"
         >
           {MODEL_OPTIONS.map((m) => {
             const active = m.id === value;
@@ -87,7 +83,7 @@ export function ModelDropdown({ value, onChange, disabled }: ModelDropdownProps)
                   setOpen(false);
                 }}
                 className={`flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-surface ${
-                  active ? "bg-surface" : ""
+                  active ? 'bg-surface' : ''
                 }`}
               >
                 <span className="mt-0.5 flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-primary-500/10 text-primary-300">
@@ -105,9 +101,7 @@ export function ModelDropdown({ value, onChange, disabled }: ModelDropdownProps)
                       </span>
                     )}
                   </span>
-                  <span className="mt-0.5 text-xs leading-snug text-text-2">
-                    {m.description}
-                  </span>
+                  <span className="mt-0.5 text-xs leading-snug text-text-2">{m.description}</span>
                 </span>
                 {active && <Check className="mt-1 h-4 w-4 flex-none text-primary-400" />}
               </button>

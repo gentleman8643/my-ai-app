@@ -1,13 +1,10 @@
-"use client";
-
-import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Sparkles } from 'lucide-react';
 
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg-0/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex items-center gap-2.5">
+        <a href="/" className="group flex items-center gap-2.5">
           <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-accent shadow-glow">
             <Sparkles className="h-5 w-5 text-white" strokeWidth={2.2} />
           </div>
@@ -19,12 +16,15 @@ export function Header() {
               Realtime AI Video
             </span>
           </div>
-        </Link>
+        </a>
 
         <nav className="hidden items-center gap-1 md:flex">
-          <NavLink href="https://www.decart.ai" label="Decart AI" external />
-          <NavLink href="https://www.decart.ai/publications/lucy-2-5-raising-the-bar-for-live-ai" label="Lucy 2.5" external />
-          <NavLink href="https://github.com/DecartAI/sdk" label="SDK Docs" external />
+          <NavLink href="https://www.decart.ai" label="Decart AI" />
+          <NavLink
+            href="https://www.decart.ai/publications/lucy-2-5-raising-the-bar-for-live-ai"
+            label="Lucy 2.5"
+          />
+          <NavLink href="https://github.com/DecartAI/sdk" label="SDK Docs" />
         </nav>
 
         <a
@@ -40,27 +40,15 @@ export function Header() {
   );
 }
 
-function NavLink({
-  href,
-  label,
-  external,
-}: {
-  href: string;
-  label: string;
-  external?: boolean;
-}) {
-  const base =
-    "rounded-lg px-3 py-2 text-sm font-medium text-text-1 transition-colors hover:bg-surface hover:text-text-0 focus-ring";
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noreferrer" className={base}>
-        {label}
-      </a>
-    );
-  }
+function NavLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className={base}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="rounded-lg px-3 py-2 text-sm font-medium text-text-1 transition-colors hover:bg-surface hover:text-text-0 focus-ring"
+    >
       {label}
-    </Link>
+    </a>
   );
 }

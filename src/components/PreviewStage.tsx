@@ -1,7 +1,5 @@
-"use client";
-
-import { Loader2, Sparkles, Video, VideoOff } from "lucide-react";
-import type { BackgroundMode } from "./ControlPanel";
+import { Loader2, Sparkles, Video, VideoOff } from 'lucide-react';
+import type { BackgroundMode } from './ControlPanel';
 
 type PreviewStageProps = {
   isStreaming: boolean;
@@ -22,17 +20,16 @@ export function PreviewStage({
   onCameraVideoRef,
   onOutputVideoRef,
 }: PreviewStageProps) {
-  const showCamera = background === "live" || isStreaming;
+  const showCamera = background === 'live' || isStreaming;
   const showOutput = isStreaming || outputReady;
 
   return (
     <section className="flex flex-1 flex-col gap-4">
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Live camera */}
         <PreviewCard
           label="Live Camera"
           icon={<Video className="h-3.5 w-3.5" />}
-          active={background === "live" && cameraReady}
+          active={background === 'live' && cameraReady}
           muted
         >
           <video
@@ -41,7 +38,7 @@ export function PreviewStage({
             playsInline
             muted
             className={`h-full w-full object-cover transition-opacity duration-300 ${
-              showCamera && cameraReady ? "opacity-100" : "opacity-0"
+              showCamera && cameraReady ? 'opacity-100' : 'opacity-0'
             }`}
           />
           {!cameraReady && (
@@ -53,7 +50,6 @@ export function PreviewStage({
           )}
         </PreviewCard>
 
-        {/* AI output */}
         <PreviewCard
           label="AI Output"
           icon={<Sparkles className="h-3.5 w-3.5" />}
@@ -66,7 +62,7 @@ export function PreviewStage({
             playsInline
             muted
             className={`h-full w-full object-cover transition-opacity duration-300 ${
-              showOutput && outputReady ? "opacity-100" : "opacity-0"
+              showOutput && outputReady ? 'opacity-100' : 'opacity-0'
             }`}
           />
           {!showOutput && !isConnecting && (
@@ -110,9 +106,9 @@ function PreviewCard({
       className={`relative flex min-h-[280px] flex-col overflow-hidden rounded-2xl border bg-bg-1 transition-colors lg:min-h-[420px] ${
         active
           ? accent
-            ? "border-primary-500/60 shadow-glow"
-            : "border-success/50"
-          : "border-border"
+            ? 'border-primary-500/60 shadow-glow'
+            : 'border-success/50'
+          : 'border-border'
       }`}
     >
       <div className="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full border border-border bg-bg-0/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-text-1 backdrop-blur">
@@ -121,7 +117,7 @@ function PreviewCard({
         {active && (
           <span
             className={`ml-1 h-1.5 w-1.5 rounded-full ${
-              muted ? "bg-text-3" : "bg-success animate-pulse-glow"
+              muted ? 'bg-text-3' : 'bg-success animate-pulse-glow'
             }`}
           />
         )}
@@ -146,7 +142,7 @@ function PlaceholderState({
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
       <div
         className={`flex h-14 w-14 items-center justify-center rounded-full ${
-          loading ? "bg-warning/10 text-warning" : "bg-surface text-text-3"
+          loading ? 'bg-warning/10 text-warning' : 'bg-surface text-text-3'
         }`}
       >
         {icon}

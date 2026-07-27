@@ -1,19 +1,17 @@
-"use client";
+import { useState } from 'react';
+import { Eye, EyeOff, KeyRound, Play, Square, Wand2, Zap } from 'lucide-react';
+import { ModelDropdown } from './ModelDropdown';
+import { ReferenceUploader } from './ReferenceUploader';
+import type { ImageValidation } from '@/lib/imageValidation';
+import type { ModelOption } from '@/lib/models';
 
-import { Eye, EyeOff, KeyRound, Play, Square, Wand2, Zap } from "lucide-react";
-import { useState } from "react";
-import { ModelDropdown } from "./ModelDropdown";
-import { ReferenceUploader } from "./ReferenceUploader";
-import type { ImageValidation } from "../lib/imageValidation";
-import type { ModelOption } from "../lib/models";
-
-export type BackgroundMode = "image" | "live";
+export type BackgroundMode = 'image' | 'live';
 
 type ControlPanelProps = {
   apiKey: string;
   onApiKeyChange: (key: string) => void;
-  modelId: ModelOption["id"];
-  onModelChange: (id: ModelOption["id"]) => void;
+  modelId: ModelOption['id'];
+  onModelChange: (id: ModelOption['id']) => void;
   prompt: string;
   onPromptChange: (prompt: string) => void;
   background: BackgroundMode;
@@ -72,9 +70,7 @@ export function ControlPanel(props: ControlPanelProps) {
       </section>
 
       <section className="flex flex-col gap-2">
-        <label className="text-xs font-semibold uppercase tracking-wider text-text-2">
-          Prompt
-        </label>
+        <label className="text-xs font-semibold uppercase tracking-wider text-text-2">Prompt</label>
         <textarea
           value={prompt}
           onChange={(e) => onPromptChange(e.target.value)}
@@ -94,16 +90,16 @@ export function ControlPanel(props: ControlPanelProps) {
         </label>
         <div className="grid grid-cols-2 gap-2">
           <BackgroundButton
-            active={background === "image"}
-            onClick={() => onBackgroundChange("image")}
+            active={background === 'image'}
+            onClick={() => onBackgroundChange('image')}
             disabled={blocked}
             icon={<Eye className="h-4 w-4" />}
             label="Use Picture"
             hint="Keep reference bg"
           />
           <BackgroundButton
-            active={background === "live"}
-            onClick={() => onBackgroundChange("live")}
+            active={background === 'live'}
+            onClick={() => onBackgroundChange('live')}
             disabled={blocked}
             icon={<Zap className="h-4 w-4" />}
             label="Live Camera"
@@ -128,7 +124,7 @@ export function ControlPanel(props: ControlPanelProps) {
         <div className="relative">
           <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-3" />
           <input
-            type={showKey ? "text" : "password"}
+            type={showKey ? 'text' : 'password'}
             value={apiKey}
             onChange={(e) => onApiKeyChange(e.target.value)}
             disabled={blocked}
@@ -141,13 +137,13 @@ export function ControlPanel(props: ControlPanelProps) {
             type="button"
             onClick={() => setShowKey((v) => !v)}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-text-3 transition-colors hover:text-text-1 focus-ring"
-            aria-label={showKey ? "Hide key" : "Show key"}
+            aria-label={showKey ? 'Hide key' : 'Show key'}
           >
             {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
         <p className="text-[11px] text-text-3">
-          Stored only in your browser. Get one at{" "}
+          Stored only in your browser. Get one at{' '}
           <a
             href="https://www.decart.ai"
             target="_blank"
@@ -168,7 +164,7 @@ export function ControlPanel(props: ControlPanelProps) {
             className="flex items-center justify-center gap-2 rounded-xl bg-error px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:brightness-110 active:scale-[0.98] focus-ring"
           >
             <Square className="h-4 w-4 fill-current" />
-            {isConnecting ? "Cancel" : "Stop Stream"}
+            {isConnecting ? 'Cancel' : 'Stop Stream'}
           </button>
         ) : (
           <button
@@ -187,10 +183,10 @@ export function ControlPanel(props: ControlPanelProps) {
             <span
               className={`h-1.5 w-1.5 flex-none rounded-full ${
                 isStreaming
-                  ? "bg-success animate-pulse-glow"
+                  ? 'bg-success animate-pulse-glow'
                   : isConnecting
-                  ? "bg-warning animate-pulse"
-                  : "bg-text-3"
+                    ? 'bg-warning animate-pulse'
+                    : 'bg-text-3'
               }`}
             />
             <span>{statusMessage}</span>
@@ -223,11 +219,11 @@ function BackgroundButton({
       disabled={disabled}
       className={`flex flex-col items-start gap-1 rounded-xl border px-3 py-2.5 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50 focus-ring ${
         active
-          ? "border-primary-500 bg-primary-500/10 text-text-0 shadow-glow"
-          : "border-border bg-surface text-text-1 hover:border-border-strong"
+          ? 'border-primary-500 bg-primary-500/10 text-text-0 shadow-glow'
+          : 'border-border bg-surface text-text-1 hover:border-border-strong'
       }`}
     >
-      <span className={`flex items-center gap-1.5 text-sm font-medium ${active ? "text-primary-300" : ""}`}>
+      <span className={`flex items-center gap-1.5 text-sm font-medium ${active ? 'text-primary-300' : ''}`}>
         {icon}
         {label}
       </span>

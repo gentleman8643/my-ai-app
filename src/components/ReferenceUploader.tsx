@@ -1,8 +1,6 @@
-"use client";
-
-import { useCallback, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, ImagePlus, Loader2, Upload, X } from "lucide-react";
-import { validateReferenceImage, type ImageValidation } from "../lib/imageValidation";
+import { useCallback, useRef, useState } from 'react';
+import { AlertTriangle, CheckCircle2, ImagePlus, Loader2, Upload, X } from 'lucide-react';
+import { validateReferenceImage, type ImageValidation } from '@/lib/imageValidation';
 
 type ReferenceUploaderProps = {
   file: File | null;
@@ -51,7 +49,7 @@ export function ReferenceUploader({
             type="button"
             onClick={() => {
               handleFile(null);
-              if (inputRef.current) inputRef.current.value = "";
+              if (inputRef.current) inputRef.current.value = '';
             }}
             className="flex items-center gap-1 text-xs font-medium text-text-3 transition-colors hover:text-error focus-ring"
           >
@@ -76,9 +74,9 @@ export function ReferenceUploader({
         onClick={() => !disabled && inputRef.current?.click()}
         className={`group relative flex min-h-[180px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed p-4 text-center transition-colors ${
           dragging
-            ? "border-primary-500 bg-primary-500/5"
-            : "border-border bg-surface hover:border-border-strong"
-        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+            ? 'border-primary-500 bg-primary-500/5'
+            : 'border-border bg-surface hover:border-border-strong'
+        } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
       >
         <input
           ref={inputRef}
@@ -95,7 +93,6 @@ export function ReferenceUploader({
         {previewUrl ? (
           <div className="flex w-full flex-col items-center gap-3">
             <div className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewUrl}
                 alt="Reference preview"
@@ -104,7 +101,7 @@ export function ReferenceUploader({
               {validation && (
                 <span
                   className={`absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-surface ${
-                    validation.ready ? "bg-success" : "bg-error"
+                    validation.ready ? 'bg-success' : 'bg-error'
                   }`}
                 >
                   {validation.ready ? (
@@ -118,7 +115,7 @@ export function ReferenceUploader({
             <div className="flex w-full items-center justify-center gap-2 text-xs text-text-2">
               <span className="truncate">{file?.name}</span>
               <span className="text-text-3">·</span>
-              <span>{file ? `${(file.size / 1024).toFixed(0)} KB` : ""}</span>
+              <span>{file ? `${(file.size / 1024).toFixed(0)} KB` : ''}</span>
             </div>
           </div>
         ) : (
@@ -131,11 +128,9 @@ export function ReferenceUploader({
               )}
             </div>
             <div className="text-sm font-medium text-text-1">
-              {validating ? "Checking image..." : "Drop a reference photo"}
+              {validating ? 'Checking image...' : 'Drop a reference photo'}
             </div>
-            <div className="text-xs text-text-3">
-              PNG, JPG, WEBP · max 12 MB · min 256px
-            </div>
+            <div className="text-xs text-text-3">PNG, JPG, WEBP · max 12 MB · min 256px</div>
             <div className="mt-1 flex items-center gap-1 text-xs font-medium text-primary-300">
               <Upload className="h-3 w-3" /> Browse files
             </div>
@@ -150,23 +145,23 @@ export function ReferenceUploader({
             <span
               className={`font-semibold ${
                 validation.score >= 80
-                  ? "text-success"
+                  ? 'text-success'
                   : validation.score >= 50
-                  ? "text-warning"
-                  : "text-error"
+                    ? 'text-warning'
+                    : 'text-error'
               }`}
             >
-              {validation.ready ? "Ready" : "Needs fixing"} · {validation.score}/100
+              {validation.ready ? 'Ready' : 'Needs fixing'} · {validation.score}/100
             </span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-2">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 validation.score >= 80
-                  ? "bg-success"
+                  ? 'bg-success'
                   : validation.score >= 50
-                  ? "bg-warning"
-                  : "bg-error"
+                    ? 'bg-warning'
+                    : 'bg-error'
               }`}
               style={{ width: `${validation.score}%` }}
             />
@@ -176,19 +171,17 @@ export function ReferenceUploader({
               <li
                 key={i}
                 className={`flex items-start gap-1.5 text-xs leading-snug ${
-                  issue.level === "error"
-                    ? "text-error"
-                    : issue.level === "warn"
-                    ? "text-warning"
-                    : "text-success"
+                  issue.level === 'error'
+                    ? 'text-error'
+                    : issue.level === 'warn'
+                      ? 'text-warning'
+                      : 'text-success'
                 }`}
               >
-                {issue.level === "error" ? (
-                  <AlertTriangle className="mt-0.5 h-3 w-3 flex-none" />
-                ) : issue.level === "warn" ? (
-                  <AlertTriangle className="mt-0.5 h-3 w-3 flex-none" />
-                ) : (
+                {issue.level === 'ok' ? (
                   <CheckCircle2 className="mt-0.5 h-3 w-3 flex-none" />
+                ) : (
+                  <AlertTriangle className="mt-0.5 h-3 w-3 flex-none" />
                 )}
                 <span>{issue.message}</span>
               </li>

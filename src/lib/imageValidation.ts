@@ -1,5 +1,5 @@
 export type ImageIssue = {
-  level: "ok" | "warn" | "error";
+  level: 'ok' | 'warn' | 'error';
   message: string;
 };
 
@@ -12,22 +12,22 @@ export type ImageValidation = {
 const MAX_BYTES = 12 * 1024 * 1024;
 const MIN_DIMENSION = 256;
 const IDEAL_MIN_DIMENSION = 512;
-const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/avif"];
+const ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/avif'];
 
 export async function validateReferenceImage(file: File): Promise<ImageValidation> {
   const issues: ImageIssue[] = [];
 
   if (!ACCEPTED_TYPES.includes(file.type)) {
     issues.push({
-      level: "error",
-      message: `Unsupported format "${file.type || "unknown"}". Use PNG, JPG, WEBP, or AVIF.`,
+      level: 'error',
+      message: `Unsupported format "${file.type || 'unknown'}". Use PNG, JPG, WEBP, or AVIF.`,
     });
     return { issues, score: 0, ready: false };
   }
 
   if (file.size > MAX_BYTES) {
     issues.push({
-      level: "error",
+      level: 'error',
       message: `File is ${(file.size / 1024 / 1024).toFixed(1)} MB. Max is 12 MB.`,
     });
   }
@@ -40,12 +40,12 @@ export async function validateReferenceImage(file: File): Promise<ImageValidatio
 
     if (minSide < MIN_DIMENSION) {
       issues.push({
-        level: "error",
+        level: 'error',
         message: `Image is ${width}x${height}px. Smallest side must be at least ${MIN_DIMENSION}px.`,
       });
     } else if (minSide < IDEAL_MIN_DIMENSION) {
       issues.push({
-        level: "warn",
+        level: 'warn',
         message: `Image is ${width}x${height}px. For best identity fidelity, use at least ${IDEAL_MIN_DIMENSION}px on the shortest side.`,
       });
     }
@@ -53,18 +53,18 @@ export async function validateReferenceImage(file: File): Promise<ImageValidatio
     const ratio = width / height;
     if (ratio > 2.4 || ratio < 0.42) {
       issues.push({
-        level: "warn",
+        level: 'warn',
         message: `Unusual aspect ratio (${ratio.toFixed(2)}:1). A near-square, well-lit face photo works best.`,
       });
     }
   }
 
   if (issues.length === 0) {
-    issues.push({ level: "ok", message: "Reference looks good. Ready to stream." });
+    issues.push({ level: 'ok', message: 'Reference looks good. Ready to stream.' });
   }
 
   const score = computeScore(issues);
-  const ready = issues.every((i) => i.level !== "error");
+  const ready = issues.every((i) => i.level !== 'error');
 
   return { issues, score, ready };
 }
@@ -72,8 +72,8 @@ export async function validateReferenceImage(file: File): Promise<ImageValidatio
 function computeScore(issues: ImageIssue[]): number {
   let score = 100;
   for (const issue of issues) {
-    if (issue.level === "error") score -= 40;
-    else if (issue.level === "warn") score -= 15;
+    if (issue.level === 'error') score -= 40;
+    else if (issue.level === 'warn') score -= 15;
   }
   return Math.max(0, score);
 }
@@ -88,7 +88,7 @@ function readDimensions(file: File): Promise<{ width: number; height: number }> 
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error("Failed to decode image"));
+      reject(new Error('Failed to decode image'));
     };
     img.src = url;
   });
