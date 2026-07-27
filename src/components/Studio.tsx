@@ -12,6 +12,17 @@ import type { ImageValidation } from '@/lib/imageValidation';
 
 const API_KEY_STORAGE = 'decart_api_key';
 
+const BACKGROUND_INSTRUCTION: Record<BackgroundMode, string> = {
+  image:
+    ' IMPORTANT: keep the exact background from the reference image, do not replace or change the background, preserve the original scene behind the subject.',
+  live:
+    ' IMPORTANT: use the live camera scene as the background, place the subject into the live surroundings seen in the camera feed.',
+};
+
+function buildPrompt(basePrompt: string, mode: BackgroundMode): string {
+  return `${basePrompt.trim()}${BACKGROUND_INSTRUCTION[mode]}`;
+}
+
 export function Studio() {
   const [apiKey, setApiKey] = useState('');
   const [modelId, setModelId] = useState<ModelOption['id']>(DEFAULT_MODEL_ID);
@@ -149,7 +160,7 @@ export function Studio() {
           setQuality(report);
         },
         initialState: {
-          prompt: { text: prompt, enhance: true },
+          prompt: { text: buildPrompt(prompt, background), enhance: true },
           image: file,
         },
       });
@@ -162,7 +173,7 @@ export function Studio() {
       setIsStreaming(false);
       cleanup();
     }
-  }, [apiKey, file, modelId, prompt, validation, cleanup]);
+  }, [apiKey, file, modelId, prompt, background, validation, cleanup]);
 
   const handleStop = useCallback(() => {
     cleanup();
@@ -175,12 +186,12 @@ export function Studio() {
     const client = clientRef.current;
     if (!client || !isStreaming) return;
     try {
-      await client.setPrompt(prompt, { enhance: true });
+      await client.setPrompt(buildPrompt(prompt, background), { enhance: true });
       setStatusMessage('Prompt updated for the live stream.');
     } catch {
       setStatusMessage('Could not update prompt while streaming.');
     }
-  }, [isStreaming, prompt]);
+  }, [isStreaming, prompt, background]);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:px-8">
@@ -213,6 +224,7 @@ export function Studio() {
           background={background}
           cameraReady={cameraReady}
           outputReady={outputReady}
+          previewUrl={previewUrl}
           onCameraVideoRef={(el) => (cameraVideoRef.current = el)}
           onOutputVideoRef={(el) => (outputVideoRef.current = el)}
         />
