@@ -12,6 +12,17 @@ import type { ImageValidation } from '@/lib/imageValidation';
 
 const API_KEY_STORAGE = 'decart_api_key';
 
+const BACKGROUND_INSTRUCTION: Record<BackgroundMode, string> = {
+  image:
+    ' Keep the person from the reference image and keep the exact background from the reference image; do not replace or change the background.',
+  live:
+    ' Keep the person from the reference image, but replace the reference background with the live camera scene as the background.',
+};
+
+function buildPrompt(basePrompt: string, mode: BackgroundMode): string {
+  return `${basePrompt.trim()}${BACKGROUND_INSTRUCTION[mode]}`;
+}
+
 export function Studio() {
   const [apiKey, setApiKey] = useState('');
   const [modelId, setModelId] = useState<ModelOption['id']>(DEFAULT_MODEL_ID);
@@ -149,8 +160,8 @@ export function Studio() {
           setQuality(report);
         },
         initialState: {
-          prompt: { text: prompt, enhance: true },
-          ...(background === 'image' && file ? { image: file } : {}),
+          prompt: { text: buildPrompt(prompt, background), enhance: true },
+          image: file,
         },
       });
 
@@ -164,18 +175,13 @@ export function Studio() {
     }
   }, [apiKey, file, modelId, prompt, background, validation, cleanup]);
 
-  // When the background mode changes mid-stream, push the reference image to
-  // Decart (picture mode) or clear it (live mode) so the AI output follows the
-  // toggle without needing to restart the stream.
+  // When the background mode changes mid-stream, re-send the prompt so the
+  // AI output follows the toggle (reference image stays set in both modes).
   useEffect(() => {
     const client = clientRef.current;
     if (!client || !isStreaming) return;
-    if (background === 'image' && file) {
-      client.setImage(file).catch(() => {});
-    } else {
-      client.setImage(null).catch(() => {});
-    }
-  }, [background, file, isStreaming]);
+    client.setPrompt(buildPrompt(prompt, background), { enhance: true }).catch(() => {});
+  }, [background, file, isStreaming, prompt]);
 
   const handleStop = useCallback(() => {
     cleanup();
@@ -188,12 +194,12 @@ export function Studio() {
     const client = clientRef.current;
     if (!client || !isStreaming) return;
     try {
-      await client.setPrompt(prompt, { enhance: true });
+      await client.setPrompt(buildPrompt(prompt, background), { enhance: true });
       setStatusMessage('Prompt updated for the live stream.');
     } catch {
       setStatusMessage('Could not update prompt while streaming.');
     }
-  }, [isStreaming, prompt]);
+  }, [isStreaming, prompt, background]);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:px-8">
