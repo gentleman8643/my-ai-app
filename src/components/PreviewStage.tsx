@@ -1,13 +1,10 @@
-import { ImageIcon, Loader2, Sparkles, Video, VideoOff } from 'lucide-react';
-import type { BackgroundMode } from './ControlPanel';
+import { Loader2, Sparkles, Video, VideoOff } from 'lucide-react';
 
 type PreviewStageProps = {
   isStreaming: boolean;
   isConnecting: boolean;
-  background: BackgroundMode;
   cameraReady: boolean;
   outputReady: boolean;
-  previewUrl: string | null;
   onCameraVideoRef: (el: HTMLVideoElement | null) => void;
   onOutputVideoRef: (el: HTMLVideoElement | null) => void;
 };
@@ -15,55 +12,36 @@ type PreviewStageProps = {
 export function PreviewStage({
   isStreaming,
   isConnecting,
-  background,
   cameraReady,
   outputReady,
-  previewUrl,
   onCameraVideoRef,
   onOutputVideoRef,
 }: PreviewStageProps) {
-  const useImageBackground = background === 'image' && Boolean(previewUrl);
-  const showCamera = background === 'live' || (isStreaming && !useImageBackground);
   const showOutput = isStreaming || outputReady;
 
   return (
     <section className="flex flex-1 flex-col gap-4">
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
         <PreviewCard
-          label={useImageBackground ? 'Reference Background' : 'Live Camera'}
-          icon={useImageBackground ? <ImageIcon className="h-3.5 w-3.5" /> : <Video className="h-3.5 w-3.5" />}
-          active={useImageBackground ? Boolean(previewUrl) : background === 'live' && cameraReady}
+          label="Live Camera"
+          icon={<Video className="h-3.5 w-3.5" />}
+          active={cameraReady}
           muted
         >
-          {useImageBackground && previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="Reference background"
-              className="h-full w-full object-cover opacity-100"
-            />
-          ) : (
-            <video
-              ref={onCameraVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`h-full w-full object-cover transition-opacity duration-300 ${
-                showCamera && cameraReady ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          )}
-          {!useImageBackground && !cameraReady && (
+          <video
+            ref={onCameraVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+              cameraReady ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+          {!cameraReady && (
             <PlaceholderState
               icon={<VideoOff className="h-7 w-7" />}
               title="Camera off"
               hint="Start the stream to enable your camera."
-            />
-          )}
-          {useImageBackground && !previewUrl && (
-            <PlaceholderState
-              icon={<ImageIcon className="h-7 w-7" />}
-              title="No reference"
-              hint="Upload a reference picture to lock its background."
             />
           )}
         </PreviewCard>
@@ -79,7 +57,7 @@ export function PreviewStage({
             autoPlay
             playsInline
             muted
-            className={`h-full w-full object-cover transition-opacity duration-300 ${
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
               showOutput && outputReady ? 'opacity-100' : 'opacity-0'
             }`}
           />
