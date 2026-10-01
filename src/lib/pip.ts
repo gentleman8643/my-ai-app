@@ -42,13 +42,17 @@ export async function openPip(
     ).documentPictureInPicture;
     const pipWindow = await dpiP.requestWindow({ width: dims.width, height: dims.height });
     const doc = pipWindow.document;
-    doc.body.style.cssText = 'margin:0;padding:0;background:#000;overflow:hidden;';
+    const htmlEl = doc.documentElement;
+    htmlEl.style.cssText = 'margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;';
+    doc.body.style.cssText =
+      'margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;display:flex;align-items:stretch;';
     const video = doc.createElement('video');
     video.srcObject = stream;
     video.autoplay = true;
     video.playsInline = true;
     video.muted = true;
-    video.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    video.style.cssText =
+      'width:100%;height:100%;object-fit:cover;display:block;flex:1;min-height:0;';
     doc.body.appendChild(video);
     await video.play().catch(() => {});
 
