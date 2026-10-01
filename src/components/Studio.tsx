@@ -7,6 +7,7 @@ import {
 } from '@decartai/sdk';
 import { ControlPanel, type BackgroundMode } from './ControlPanel';
 import { PreviewStage } from './PreviewStage';
+import { PipControls } from './PipControls';
 import { DEFAULT_MODEL_ID, DEFAULT_PROMPT, getModel, type ModelOption } from '@/lib/models';
 import type { ImageValidation } from '@/lib/imageValidation';
 
@@ -40,6 +41,8 @@ export function Studio() {
   const cameraVideoRef = useRef<HTMLVideoElement | null>(null);
   const outputVideoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const remoteStreamRef = useRef<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const clientRef = useRef<RealTimeClient | null>(null);
 
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
@@ -79,6 +82,8 @@ export function Studio() {
       streamRef.current.getTracks().forEach((t) => t.stop());
     }
     streamRef.current = null;
+    remoteStreamRef.current = null;
+    setRemoteStream(null);
     if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
     if (outputVideoRef.current) outputVideoRef.current.srcObject = null;
     setCameraReady(false);
@@ -139,6 +144,8 @@ export function Studio() {
         mirror: 'auto',
         preferredVideoCodec: 'h264',
         onRemoteStream: (remoteStream) => {
+          remoteStreamRef.current = remoteStream;
+          setRemoteStream(remoteStream);
           const out = outputVideoRef.current;
           if (out) {
             out.srcObject = remoteStream;
@@ -248,13 +255,16 @@ export function Studio() {
                 </span>
               )}
             </div>
-            <button
-              type="button"
-              onClick={handleApplyPrompt}
-              className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-1 transition-colors hover:border-primary-500 hover:text-primary-300 focus-ring"
-            >
-              Re-apply prompt
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <PipControls stream={remoteStream} />
+              <button
+                type="button"
+                onClick={handleApplyPrompt}
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-1 transition-colors hover:border-primary-500 hover:text-primary-300 focus-ring"
+              >
+                Re-apply prompt
+              </button>
+            </div>
           </div>
         )}
       </div>
