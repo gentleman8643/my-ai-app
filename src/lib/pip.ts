@@ -28,8 +28,8 @@ export async function openPip(
   await source.play();
 
   const canvas = document.createElement('canvas');
-  const width = orientation === 'portrait' ? 720 : 1280;
-  const height = orientation === 'portrait' ? 1280 : 720;
+  const width = orientation === 'portrait' ? 1080 : 1920;
+  const height = orientation === 'portrait' ? 1920 : 1080;
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext('2d');

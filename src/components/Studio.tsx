@@ -98,11 +98,11 @@ export function Studio() {
     setStatusMessage('Requesting camera access...');
 
     try {
-      // Low-latency camera constraints: 720p @ 30fps, user-facing, with latency hint.
+      // Request the highest realtime resolution supported by the Decart session.
       const constraints: MediaStreamConstraints = {
         video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
           frameRate: { ideal: 30, max: 30 },
           facingMode: 'user',
         },
@@ -138,7 +138,7 @@ export function Studio() {
 
       const connection = await decart.realtime.connect(camStream, {
         model,
-        resolution: '720p',
+        resolution: '1080p',
         mirror: 'auto',
         preferredVideoCodec: 'h264',
         onRemoteStream: (remoteStream) => {
